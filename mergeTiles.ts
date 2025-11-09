@@ -5,13 +5,13 @@
  * - If layer extents differ, decode geometry, rescale to target extent, and re-encode.
  * - Return a single Tile protobuf as Uint8Array (uncompressed).
  */
-export async function mergeTiles(tiles: Uint8Array[]): Promise<Uint8Array> {
+export async function mergeTiles(parts: Uint8Array[]): Promise<Uint8Array> {
   // Parse each tile into lightweight layer representations
-  const tiles = tiles.map(parseTileSafe);
+  const tiles = parts.map(parseTileSafe);
 
   // Group layers with the same name across tiles (respect source order: bottom -> top)
   const layersByName = new Map<string, ParsedLayer[]>();
-  tiles.forEach((t, tileIdx) => {
+  parts.forEach((t, tileIdx) => {
     for (const lyr of t.layers) {
       const arr = layersByName.get(lyr.name) ?? [];
       arr.push({ ...lyr, _tileIndex: tileIdx });
